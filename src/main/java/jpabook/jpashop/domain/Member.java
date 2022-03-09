@@ -16,11 +16,12 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
+    @Column(unique = true)
     private String name;
 
     @Embedded // 내장 타입
     private Address address;
 
     @OneToMany(mappedBy = "member") // order 엔티티의 Member 변수 필드명
-    private List<Order> order = new ArrayList<>();
+    private List<Order> orders = new ArrayList<>();
 }
