@@ -8,12 +8,16 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
-#      애플리케이션 실행 시점에 테이블을 모두 지우고 다시 생성
+#      ddl-auto: create => 애플리케이션 실행 시점에 테이블을 모두 지우고 다시 생성
+#      ddl-auto: none => 애플리케이션을 재실행해도 데이터가 지워지지 않고 남아있음
     properties:
       hibernate:
 #        show_sql: true
 #        이 옵션은 System.out.println 으로 sql 로그를 찍겠다는 의미
         format_sql: true
+        default_batch_fetch_size: 100
+# 컬렉션 조회 시 인자 100개 단위로 IN 키워드 사용해서 컬렉션을 가져오는 옵션
+# 각 컬렉션마다 배치 사이즈 다르게 하고 싶으면 해당 엔티티의 컬렉션에다가 @BatchSize(size = 100) 을 붙이면 된다.
 
 logging:
   level:

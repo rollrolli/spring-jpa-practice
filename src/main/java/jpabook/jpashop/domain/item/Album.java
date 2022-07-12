@@ -14,4 +14,17 @@ public class Album extends Item {
     private String artist;
     private String etc;
 
+    public static Album createAlbum(String name, int price, int stockQuantity, String artist, String etc) {
+
+        Album album = new Album();
+
+        album.setName(name);
+        album.setPrice(price);
+        album.setStockQuantity(stockQuantity);
+        album.setArtist(artist);
+        album.setEtc(etc);
+
+        return album;
+    }
+
 }

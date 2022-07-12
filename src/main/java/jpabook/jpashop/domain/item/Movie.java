@@ -13,4 +13,16 @@ public class Movie extends Item {
 
     private String director;
 
+    public static Movie createMovie(String name, int price, int stockQuantity, String director) {
+
+        Movie movie = new Movie();
+
+        movie.setName(name);
+        movie.setPrice(price);
+        movie.setStockQuantity(stockQuantity);
+        movie.setDirector(director);
+
+        return movie;
+    }
+
 }

@@ -54,6 +54,5 @@ public class ItemServiceTest {
 
         // then
         assertThat(album).isEqualTo(savedItem);
-
     }
 }

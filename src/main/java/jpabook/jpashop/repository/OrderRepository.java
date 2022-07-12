@@ -1,6 +1,5 @@
 package jpabook.jpashop.repository;
 
-import jpabook.jpashop.domain.Member;
 import jpabook.jpashop.domain.Order;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -26,29 +25,29 @@ import java.util.List;
         return em.find(Order.class, id);
     }
 
-    public List<Order> findAllByString(OrderSearch orderSearch) {
+    public List<Order>  findAllByString(OrderSearch orderSearch) {
 
         String jpql = "select o from Order o join o.member m";
         boolean isFirstCondition = true;
 
         if (orderSearch.getOrderStatus() != null) {
             if (isFirstCondition) {
-                jpql += "where";
+                jpql += " where";
                 isFirstCondition = false;
             } else {
                 jpql += " and";
             }
-            jpql += "o.status = :status";
+            jpql += " o.status = :status";
         }
 
         if (StringUtils.hasText(orderSearch.getMemberName())) {
             if (isFirstCondition) {
-                jpql += "where";
+                jpql += " where";
                 isFirstCondition = false;
             } else {
                 jpql += " and";
             }
-            jpql += "m.name = :name";
+            jpql += " m.name = :name";
         }
 
         TypedQuery<Order> query = em.createQuery(jpql, Order.class)
@@ -99,4 +98,43 @@ import java.util.List;
         return query.getResultList();
     }
 
+    public List<Order> findAllWithMemberDelivery() {
+        return em.createQuery("select o from Order o" +
+                " join fetch o.member m" +
+                " join fetch o.delivery d", Order.class)
+                .getResultList();
+    }
+
+    public List<Order> findAllWithItem() {
+        return em.createQuery(
+                "select distinct o from Order o" +
+                        // distinct 키워드를 넣으면 JPA 가 SQL 에도 distinct 추가해주고, 알아서 orderId 로 중복제거까지 해줌
+                        // 일대일이나 다대일 관계는 중복 엔티티가 조회되지 않으므로 상관없지만, 일대다 일 때 사용하면 됨
+                " join fetch o.member m" +
+                " join fetch o.delivery d" +
+                " join fetch o.orderItems oi" +
+                " join fetch oi.item i", Order.class)
+                .setFirstResult(1)
+                .setMaxResults(100)
+                .getResultList();
+        // distinct 사용 시 유의점 : 페이징 처리 안됨
+        // 컬렉션 페치조인(일대다 연관관계 있는 조인)을 사용하면서 페이징 처리를 하면
+        // 하이버네이트가 전체 조회 후 메모리에서 페이징 처리를 하기 때문에 OOM 발생 가능성이 있다.
+        // 그러므로 쓰면 안된다.
+
+        // 컬렉션 둘 이상에 페치조인을 쓰면 안된다. 데이터가 부정합하게 조회될 수 있다.
+
+    }
+
+    public List<Order> findAllWithMemberDelivery(int offset, int limit) {
+        return em.createQuery("select o from Order o" +
+                " join fetch o.member m" +
+                        // xToOne 관계를 fetch join 하지 않으면
+                        // default_batch_fetch_size 의 영향으로 각 연관관계마다 데이터를 가져오는 쿼리를 던진다.
+                        // 그러므로 xToOne 은 fetch join 을 걸어주는 편이 더 성능이 좋다.
+                " join fetch o.delivery d", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+    }
 }
