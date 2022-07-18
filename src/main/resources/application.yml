@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url:  jdbc:h2:tcp://localhost/~/jpashop
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    open-in-view: true
+# spring.jpa.open-in-view 를 true (=default) 로 하면 영속성 컨텍스트와 db 커넥션이 api 응답 시까지 살아있는데
+# false 로 하면 영속성 컨텍스트와 db 커넥션이 @Transactional 프록시 객체 반환 시(= 트랜잭션 종료) 리턴 되므로
+# controller 나 view 레이어에서 지연로딩의 강제 초기화가 불가능하다. -> LazyInitializationException 발생
+
+# 고객 서비스의 실시간 API 는 OSIV 를 끄고, ADMIN 처럼 커넥션을 많이 사용하지 않는 곳에서는 OSIV 를 켜는 것을 추천
+
+    hibernate:
+      ddl-auto: create
+#      ddl-auto: create => 애플리케이션 실행 시점에 테이블을 모두 지우고 다시 생성
+#      ddl-auto: none => 애플리케이션을 재실행해도 데이터가 지워지지 않고 남아있음
+    properties:
+      hibernate:
+#        show_sql: true
+#        이 옵션은 System.out.println 으로 sql 로그를 찍겠다는 의미
+        format_sql: true
+        default_batch_fetch_size: 100
+# 컬렉션 조회 시 인자 100개 단위로 IN 키워드 사용해서 컬렉션을 가져오는 옵션
+# 각 컬렉션마다 배치 사이즈 다르게 하고 싶으면 해당 엔티티의 컬렉션에다가 @BatchSize(size = 100) 을 붙이면 된다.
+
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace # 쿼리 파라미터 로깅

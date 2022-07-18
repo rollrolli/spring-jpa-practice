@@ -1,0 +1,26 @@
+# src/test/resources 경로에 application.yml (.properties) 를 만들면
+# 테스트 할 때 해당 설정파일을 가지고 실행된다.
+
+spring:
+#  datasource:
+#    url:  jdbc:h2:mem:test # memory 모드로 동작시키기
+#    username: sa
+#    password:
+#    driver-class-name: org.h2.Driver
+#
+#  jpa:
+#    hibernate:
+#      ddl-auto: create-drop # spring boot 는 디폴트가 create-drop (애플리케이션 종료 시점에 모두 drop 시킴)
+##      애플리케이션 실행 시점에 테이블을 모두 지우고 다시 생성
+#    properties:
+#      hibernate:
+##        show_sql: true
+##        이 옵션은 System.out.println 으로 sql 로그를 찍겠다는 의미
+#        format_sql: true
+
+# 스프링 부트는 기본적으로 DB 설정을 하지 않으면 메모리 DB 로 실행해버림
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type: trace # 쿼리 파라미터 로깅
